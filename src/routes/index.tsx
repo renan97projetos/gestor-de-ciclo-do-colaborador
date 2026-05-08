@@ -649,7 +649,7 @@ function PainelScreen(props: {
       <section className="px-8 py-6">
         {status === "TAREFA" && ciclo && <CardTarefaAtiva ciclo={ciclo} now={now} />}
         {status === "PAUSA" && pausa && <CardPausaAtiva pausa={pausa} now={now} />}
-        {status === "OCIOSO" && <CardOcioso ultimos={ultimos} now={now} />}
+        {status === "OCIOSO" && <CardOcioso ultimos={ultimos} jornada={jornada} now={now} />}
       </section>
 
       {/* Menu */}
