@@ -656,7 +656,7 @@ function PainelScreen(props: {
           <div className="text-muted-foreground text-sm">Nenhuma tarefa ainda hoje.</div>
         ) : (
           <ul className="grid grid-cols-3 gap-3">
-            {ultimos.map((c) => (
+            {ultimos.slice(0, 3).map((c) => (
               <li key={c.id} className="border border-border px-3 py-2 text-sm flex items-center justify-between">
                 <span className="font-display uppercase truncate">{c.nome_tarefa}</span>
                 <span className="font-mono text-muted-foreground">
