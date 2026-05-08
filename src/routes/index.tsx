@@ -603,9 +603,9 @@ function PainelScreen(props: {
       ];
     }
     // Estado A (jornada sem tarefa, nenhum ciclo encerrado) ou C (já encerrou pelo menos uma)
-    const base = [
-      { kbd: "1", label: "INICIAR TAREFA", onSelect: props.onIniciarTarefa, variant: "success" as const, icon: <Play className="size-6" /> },
-      { kbd: "2", label: "PAUSA FORÇADA (SEM TAREFA)", onSelect: props.onPausa, variant: "warning" as const, icon: <Coffee className="size-6" /> },
+    const base: { kbd: string; label: string; onSelect: () => void; variant?: "success" | "warning" | "danger"; icon?: React.ReactNode }[] = [
+      { kbd: "1", label: "INICIAR TAREFA", onSelect: props.onIniciarTarefa, variant: "success", icon: <Play className="size-6" /> },
+      { kbd: "2", label: "PAUSA FORÇADA (SEM TAREFA)", onSelect: props.onPausa, variant: "warning", icon: <Coffee className="size-6" /> },
       { kbd: "3", label: "REGISTRAR OCORRÊNCIA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
     ];
     if (algumCicloEncerrado) {
