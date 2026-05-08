@@ -1,11 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Handlers = {
   onDigit?: (n: number) => void;
   onEnter?: () => void;
   onEscape?: () => void;
   onBackspace?: () => void;
-  /** Quando true, ignora 0-9 (use em telas com input de texto livre). */
   ignoreDigits?: boolean;
 };
 
@@ -14,7 +13,7 @@ export function useKeyboardNav(handlers: Handlers, deps: unknown[] = []) {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const isTyping =
-        target &&
+        !!target &&
         (target.tagName === "INPUT" ||
           target.tagName === "TEXTAREA" ||
           target.isContentEditable);
@@ -54,8 +53,8 @@ export function fmtDuration(seconds: number): string {
 }
 
 export function useNow(intervalMs = 1000) {
-  const [now, setNow] = (require("react") as typeof import("react")).useState(Date.now());
-  (require("react") as typeof import("react")).useEffect(() => {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), intervalMs);
     return () => clearInterval(id);
   }, [intervalMs]);
