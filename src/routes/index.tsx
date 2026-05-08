@@ -402,20 +402,25 @@ function IdleScreen({ onAny }: { onAny: () => void }) {
     window.addEventListener("keydown", handler, { once: true });
     return () => window.removeEventListener("keydown", handler);
   }, [onAny]);
-  const d = new Date(now);
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  const ss = String(d.getSeconds()).padStart(2, "0");
-  const dataStr = d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+  const mounted = now > 0;
+  const d = mounted ? new Date(now) : null;
+  const hh = d ? String(d.getHours()).padStart(2, "0") : "--";
+  const mm = d ? String(d.getMinutes()).padStart(2, "0") : "--";
+  const ss = d ? String(d.getSeconds()).padStart(2, "0") : "--";
+  const dataStr = d
+    ? d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })
+    : "";
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-8 cursor-pointer" onClick={onAny}>
       <div className="text-sm uppercase tracking-[0.4em] text-muted-foreground font-display mb-6">
         Tracker Operacional
       </div>
-      <div className="font-mono text-[180px] leading-none text-primary font-bold">
+      <div className="font-mono text-[180px] leading-none text-primary font-bold" suppressHydrationWarning>
         {hh}:{mm}<span className="text-muted-foreground">:{ss}</span>
       </div>
-      <div className="mt-4 text-2xl text-muted-foreground capitalize">{dataStr}</div>
+      <div className="mt-4 text-2xl text-muted-foreground capitalize" suppressHydrationWarning>
+        {dataStr || "\u00a0"}
+      </div>
       <div className="mt-16 px-8 py-4 border border-border bg-card font-display text-2xl uppercase tracking-widest pulse-alert">
         Pressione qualquer tecla para iniciar
       </div>

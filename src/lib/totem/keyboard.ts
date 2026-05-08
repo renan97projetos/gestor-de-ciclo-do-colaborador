@@ -53,8 +53,10 @@ export function fmtDuration(seconds: number): string {
 }
 
 export function useNow(intervalMs = 1000) {
-  const [now, setNow] = useState(() => Date.now());
+  // Inicia em 0 para evitar mismatch SSR/CSR; primeira atualização só no cliente.
+  const [now, setNow] = useState(0);
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), intervalMs);
     return () => clearInterval(id);
   }, [intervalMs]);
