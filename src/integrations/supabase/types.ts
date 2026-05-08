@@ -14,7 +14,566 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alertas: {
+        Row: {
+          colaborador_id: string | null
+          criado_em: string
+          id: string
+          lido: boolean
+          lido_em: string | null
+          mensagem: string
+          tipo: string
+        }
+        Insert: {
+          colaborador_id?: string | null
+          criado_em?: string
+          id?: string
+          lido?: boolean
+          lido_em?: string | null
+          mensagem: string
+          tipo: string
+        }
+        Update: {
+          colaborador_id?: string | null
+          criado_em?: string
+          id?: string
+          lido?: boolean
+          lido_em?: string | null
+          mensagem?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertas_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ciclos: {
+        Row: {
+          colaborador_id: string
+          criado_em: string
+          desvio_minutos: number | null
+          duracao_real_minutos: number | null
+          fim: string | null
+          id: string
+          inicio: string
+          jornada_id: string
+          motivo_externo: string | null
+          nome_tarefa: string
+          observacao: string | null
+          origem: string
+          quantidade_pecas: number | null
+          setor_id: string | null
+          status: string
+          subtarefa: string | null
+          tarefa_padrao_id: string | null
+          tempo_estimado_minutos: number | null
+          tipo: string
+          validado_supervisor: boolean | null
+        }
+        Insert: {
+          colaborador_id: string
+          criado_em?: string
+          desvio_minutos?: number | null
+          duracao_real_minutos?: number | null
+          fim?: string | null
+          id?: string
+          inicio?: string
+          jornada_id: string
+          motivo_externo?: string | null
+          nome_tarefa: string
+          observacao?: string | null
+          origem?: string
+          quantidade_pecas?: number | null
+          setor_id?: string | null
+          status?: string
+          subtarefa?: string | null
+          tarefa_padrao_id?: string | null
+          tempo_estimado_minutos?: number | null
+          tipo?: string
+          validado_supervisor?: boolean | null
+        }
+        Update: {
+          colaborador_id?: string
+          criado_em?: string
+          desvio_minutos?: number | null
+          duracao_real_minutos?: number | null
+          fim?: string | null
+          id?: string
+          inicio?: string
+          jornada_id?: string
+          motivo_externo?: string | null
+          nome_tarefa?: string
+          observacao?: string | null
+          origem?: string
+          quantidade_pecas?: number | null
+          setor_id?: string | null
+          status?: string
+          subtarefa?: string | null
+          tarefa_padrao_id?: string | null
+          tempo_estimado_minutos?: number | null
+          tipo?: string
+          validado_supervisor?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ciclos_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ciclos_jornada_id_fkey"
+            columns: ["jornada_id"]
+            isOneToOne: false
+            referencedRelation: "jornadas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ciclos_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ciclos_tarefa_padrao_id_fkey"
+            columns: ["tarefa_padrao_id"]
+            isOneToOne: false
+            referencedRelation: "tarefas_padrao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colaboradores: {
+        Row: {
+          ativo: boolean
+          criado_em: string
+          horario_entrada: string | null
+          horario_saida: string | null
+          id: string
+          matricula: string
+          nome: string
+          setor_padrao_id: string | null
+          turno: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          criado_em?: string
+          horario_entrada?: string | null
+          horario_saida?: string | null
+          id?: string
+          matricula: string
+          nome: string
+          setor_padrao_id?: string | null
+          turno?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          criado_em?: string
+          horario_entrada?: string | null
+          horario_saida?: string | null
+          id?: string
+          matricula?: string
+          nome?: string
+          setor_padrao_id?: string | null
+          turno?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_setor_padrao_id_fkey"
+            columns: ["setor_padrao_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jornadas: {
+        Row: {
+          colaborador_id: string
+          criado_em: string
+          data: string
+          fim: string | null
+          id: string
+          inicio: string
+          pontuacao_final: number | null
+          status: string
+          total_minutos: number | null
+          total_ocioso_minutos: number | null
+          total_produtivo_minutos: number | null
+          turno: string | null
+        }
+        Insert: {
+          colaborador_id: string
+          criado_em?: string
+          data: string
+          fim?: string | null
+          id?: string
+          inicio?: string
+          pontuacao_final?: number | null
+          status?: string
+          total_minutos?: number | null
+          total_ocioso_minutos?: number | null
+          total_produtivo_minutos?: number | null
+          turno?: string | null
+        }
+        Update: {
+          colaborador_id?: string
+          criado_em?: string
+          data?: string
+          fim?: string | null
+          id?: string
+          inicio?: string
+          pontuacao_final?: number | null
+          status?: string
+          total_minutos?: number | null
+          total_ocioso_minutos?: number | null
+          total_produtivo_minutos?: number | null
+          turno?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jornadas_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      missoes: {
+        Row: {
+          ativo: boolean
+          descricao: string | null
+          id: string
+          meta_tipo: string
+          meta_valor: number
+          periodo: string
+          pontos_bonus: number
+          titulo: string
+        }
+        Insert: {
+          ativo?: boolean
+          descricao?: string | null
+          id?: string
+          meta_tipo: string
+          meta_valor: number
+          periodo: string
+          pontos_bonus?: number
+          titulo: string
+        }
+        Update: {
+          ativo?: boolean
+          descricao?: string | null
+          id?: string
+          meta_tipo?: string
+          meta_valor?: number
+          periodo?: string
+          pontos_bonus?: number
+          titulo?: string
+        }
+        Relationships: []
+      }
+      missoes_colaborador: {
+        Row: {
+          colaborador_id: string
+          concluida: boolean
+          criado_em: string
+          id: string
+          missao_id: string
+          periodo_referencia: string
+          pontos_ganhos: number
+          progresso: number
+        }
+        Insert: {
+          colaborador_id: string
+          concluida?: boolean
+          criado_em?: string
+          id?: string
+          missao_id: string
+          periodo_referencia: string
+          pontos_ganhos?: number
+          progresso?: number
+        }
+        Update: {
+          colaborador_id?: string
+          concluida?: boolean
+          criado_em?: string
+          id?: string
+          missao_id?: string
+          periodo_referencia?: string
+          pontos_ganhos?: number
+          progresso?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "missoes_colaborador_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "missoes_colaborador_missao_id_fkey"
+            columns: ["missao_id"]
+            isOneToOne: false
+            referencedRelation: "missoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ocorrencias: {
+        Row: {
+          ciclo_id: string | null
+          colaborador_id: string
+          criado_em: string
+          descricao: string
+          foto_url: string | null
+          id: string
+          jornada_id: string | null
+          responsavel_externo: string | null
+          tipo: string
+        }
+        Insert: {
+          ciclo_id?: string | null
+          colaborador_id: string
+          criado_em?: string
+          descricao: string
+          foto_url?: string | null
+          id?: string
+          jornada_id?: string | null
+          responsavel_externo?: string | null
+          tipo: string
+        }
+        Update: {
+          ciclo_id?: string | null
+          colaborador_id?: string
+          criado_em?: string
+          descricao?: string
+          foto_url?: string | null
+          id?: string
+          jornada_id?: string | null
+          responsavel_externo?: string | null
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ocorrencias_ciclo_id_fkey"
+            columns: ["ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "ciclos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ocorrencias_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ocorrencias_jornada_id_fkey"
+            columns: ["jornada_id"]
+            isOneToOne: false
+            referencedRelation: "jornadas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pausas: {
+        Row: {
+          colaborador_id: string
+          criado_em: string
+          duracao_minutos: number | null
+          excedeu_limite: boolean | null
+          fim: string | null
+          id: string
+          inicio: string
+          jornada_id: string
+          justificativa: string | null
+          tipo: string
+          validado_supervisor: boolean | null
+        }
+        Insert: {
+          colaborador_id: string
+          criado_em?: string
+          duracao_minutos?: number | null
+          excedeu_limite?: boolean | null
+          fim?: string | null
+          id?: string
+          inicio?: string
+          jornada_id: string
+          justificativa?: string | null
+          tipo: string
+          validado_supervisor?: boolean | null
+        }
+        Update: {
+          colaborador_id?: string
+          criado_em?: string
+          duracao_minutos?: number | null
+          excedeu_limite?: boolean | null
+          fim?: string | null
+          id?: string
+          inicio?: string
+          jornada_id?: string
+          justificativa?: string | null
+          tipo?: string
+          validado_supervisor?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pausas_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pausas_jornada_id_fkey"
+            columns: ["jornada_id"]
+            isOneToOne: false
+            referencedRelation: "jornadas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pontuacoes: {
+        Row: {
+          atualizado_em: string
+          colaborador_id: string
+          data: string
+          eventos: Json
+          id: string
+          jornada_id: string
+          pontos_final: number
+          pontos_inicio: number
+        }
+        Insert: {
+          atualizado_em?: string
+          colaborador_id: string
+          data: string
+          eventos?: Json
+          id?: string
+          jornada_id: string
+          pontos_final?: number
+          pontos_inicio?: number
+        }
+        Update: {
+          atualizado_em?: string
+          colaborador_id?: string
+          data?: string
+          eventos?: Json
+          id?: string
+          jornada_id?: string
+          pontos_final?: number
+          pontos_inicio?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pontuacoes_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pontuacoes_jornada_id_fkey"
+            columns: ["jornada_id"]
+            isOneToOne: true
+            referencedRelation: "jornadas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regras_pontuacao: {
+        Row: {
+          descricao: string | null
+          evento: string
+          id: string
+          pontos: number
+        }
+        Insert: {
+          descricao?: string | null
+          evento: string
+          id?: string
+          pontos: number
+        }
+        Update: {
+          descricao?: string | null
+          evento?: string
+          id?: string
+          pontos?: number
+        }
+        Relationships: []
+      }
+      setores: {
+        Row: {
+          criado_em: string
+          descricao: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+        }
+        Update: {
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      tarefas_padrao: {
+        Row: {
+          ativo: boolean
+          criado_em: string
+          id: string
+          nome: string
+          setor_id: string
+          subtarefa: string | null
+          tempo_medio_minutos: number
+          tempo_por_peca_segundos: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          criado_em?: string
+          id?: string
+          nome: string
+          setor_id: string
+          subtarefa?: string | null
+          tempo_medio_minutos?: number
+          tempo_por_peca_segundos?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          criado_em?: string
+          id?: string
+          nome?: string
+          setor_id?: string
+          subtarefa?: string | null
+          tempo_medio_minutos?: number
+          tempo_por_peca_segundos?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarefas_padrao_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
