@@ -26,7 +26,7 @@ import {
   loginPorMatricula,
   registrarOcorrencia,
 } from "@/lib/totem/api";
-import { Activity, AlertTriangle, Clock, Coffee, LogOut, Play, Square, Trophy, Zap } from "lucide-react";
+import { Activity, AlertTriangle, Clock, Coffee, LogOut, Play, Square, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -583,29 +583,36 @@ function PainelScreen(props: {
 
   const status = pausa ? "PAUSA" : ciclo ? "TAREFA" : "OCIOSO";
 
+  // Estado C: pelo menos um ciclo já encerrado nesta jornada (libera [9] ENCERRAR JORNADA)
+  const algumCicloEncerrado = ultimos.some((c) => !!c.fim);
+
   const items = useMemo(() => {
+    // Estado: PAUSA aberta
     if (pausa) {
       return [
         { kbd: "1", label: "RETORNAR DA PAUSA", onSelect: props.onRetornarPausa, variant: "success" as const, icon: <Play className="size-6" /> },
         { kbd: "3", label: "REGISTRAR OCORRÊNCIA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
       ];
     }
+    // Estado B: TAREFA em andamento
     if (ciclo) {
       return [
         { kbd: "1", label: "ENCERRAR TAREFA ATUAL", onSelect: props.onEncerrarTarefa, variant: "success" as const, icon: <Square className="size-6" /> },
         { kbd: "2", label: "REGISTRAR PAUSA", onSelect: props.onPausa, variant: "warning" as const, icon: <Coffee className="size-6" /> },
         { kbd: "3", label: "REGISTRAR OCORRÊNCIA NESTA TAREFA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
-        { kbd: "4", label: "VER MEU RESUMO DO DIA", onSelect: props.onResumo, icon: <Trophy className="size-6" /> },
       ];
     }
-    return [
-      { kbd: "1", label: "INICIAR TAREFA", onSelect: props.onIniciarTarefa, variant: "success" as const, icon: <Play className="size-6" /> },
-      { kbd: "2", label: "REGISTRAR PAUSA", onSelect: props.onPausa, variant: "warning" as const, icon: <Coffee className="size-6" /> },
+    // Estado A (jornada sem tarefa, nenhum ciclo encerrado) ou C (já encerrou pelo menos uma)
+    const base: { kbd: string; label: string; onSelect: () => void; variant?: "success" | "warning" | "danger"; icon?: React.ReactNode }[] = [
+      { kbd: "1", label: "INICIAR TAREFA", onSelect: props.onIniciarTarefa, variant: "success", icon: <Play className="size-6" /> },
+      { kbd: "2", label: "PAUSA FORÇADA (SEM TAREFA)", onSelect: props.onPausa, variant: "warning", icon: <Coffee className="size-6" /> },
       { kbd: "3", label: "REGISTRAR OCORRÊNCIA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
-      { kbd: "4", label: "VER MEU RESUMO DO DIA", onSelect: props.onResumo, icon: <Trophy className="size-6" /> },
-      { kbd: "9", label: "ENCERRAR JORNADA", onSelect: props.onEncerrarJornada, variant: "danger" as const, icon: <LogOut className="size-6" /> },
     ];
-  }, [pausa?.id, ciclo?.id]);
+    if (algumCicloEncerrado) {
+      base.push({ kbd: "9", label: "ENCERRAR JORNADA", onSelect: props.onEncerrarJornada, variant: "danger" as const, icon: <LogOut className="size-6" /> });
+    }
+    return base;
+  }, [pausa?.id, ciclo?.id, algumCicloEncerrado]);
 
   useKeyboardNav(
     {
@@ -642,7 +649,7 @@ function PainelScreen(props: {
       <section className="px-8 py-6">
         {status === "TAREFA" && ciclo && <CardTarefaAtiva ciclo={ciclo} now={now} />}
         {status === "PAUSA" && pausa && <CardPausaAtiva pausa={pausa} now={now} />}
-        {status === "OCIOSO" && <CardOcioso ultimos={ultimos} now={now} />}
+        {status === "OCIOSO" && <CardOcioso ultimos={ultimos} jornada={jornada} now={now} />}
       </section>
 
       {/* Menu */}
@@ -736,10 +743,12 @@ function CardPausaAtiva({ pausa, now }: { pausa: Pausa; now: number }) {
   );
 }
 
-function CardOcioso({ ultimos, now }: { ultimos: Ciclo[]; now: number }) {
+function CardOcioso({ ultimos, jornada, now }: { ultimos: Ciclo[]; jornada: Jornada; now: number }) {
   const ultimo = ultimos.find((c) => c.fim);
-  const ref = ultimo?.fim ? new Date(ultimo.fim).getTime() : null;
-  const sec = ref ? (now - ref) / 1000 : 0;
+  // Se ainda não houve nenhuma tarefa encerrada, mede ociosidade desde o início da jornada
+  const ref = ultimo?.fim ? new Date(ultimo.fim).getTime() : new Date(jornada.inicio).getTime();
+  const desdeInicio = !ultimo;
+  const sec = Math.max(0, (now - ref) / 1000);
   const alerta = sec > 300;
   return (
     <div className={`panel p-6 border-l-4 ${alerta ? "pulse-alert" : ""}`} style={{ borderLeftColor: "var(--destructive)" }}>
@@ -749,14 +758,14 @@ function CardOcioso({ ultimos, now }: { ultimos: Ciclo[]; now: number }) {
           <div className="text-3xl font-display font-bold mt-1 text-destructive">SEM TAREFA ATIVA</div>
           <div className="text-sm text-muted-foreground mt-1">Inicie uma tarefa pressionando [1]</div>
         </div>
-        {ref && (
-          <div className="text-right">
-            <div className="text-xs font-display uppercase text-muted-foreground tracking-widest">Ocioso há</div>
-            <div className={`font-mono text-6xl font-bold ${alerta ? "text-destructive" : "text-warning"}`}>
-              {fmtDuration(sec)}
-            </div>
+        <div className="text-right">
+          <div className="text-xs font-display uppercase text-muted-foreground tracking-widest">
+            {desdeInicio ? "Ocioso desde início" : "Ocioso há"}
           </div>
-        )}
+          <div className={`font-mono text-6xl font-bold ${alerta ? "text-destructive" : "text-warning"}`}>
+            {fmtDuration(sec)}
+          </div>
+        </div>
       </div>
     </div>
   );
