@@ -410,6 +410,8 @@ function TotemPage() {
             setJornada(null);
             setCiclo(null);
             setPausa(null);
+            setUltimos([]);
+            setPontos(1000);
           }}
         />
       )}
