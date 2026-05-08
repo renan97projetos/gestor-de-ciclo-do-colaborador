@@ -26,7 +26,7 @@ import {
   loginPorMatricula,
   registrarOcorrencia,
 } from "@/lib/totem/api";
-import { Activity, AlertTriangle, Clock, Coffee, LogOut, Play, Square, Trophy, Zap } from "lucide-react";
+import { Activity, AlertTriangle, Clock, Coffee, LogOut, Play, Square, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
