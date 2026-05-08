@@ -100,7 +100,7 @@ function TotemPage() {
     const [c, p, u, pts] = await Promise.all([
       getCicloAberto(jj.id),
       getPausaAberta(jj.id),
-      listarUltimosCiclos(jj.id, 3),
+      listarUltimosCiclos(jj.id, 30),
       getPontuacao(jj.id),
     ]);
     setCiclo(c);
@@ -116,6 +116,31 @@ function TotemPage() {
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jornada?.id]);
+
+  // Timeout de inatividade: 3 min sem interagir → volta para IDLE
+  // (não encerra jornada; ao logar de novo o painel é restaurado)
+  const lastActivityRef = useRef<number>(Date.now());
+  useEffect(() => {
+    const bump = () => { lastActivityRef.current = Date.now(); };
+    window.addEventListener("keydown", bump);
+    window.addEventListener("mousedown", bump);
+    window.addEventListener("touchstart", bump);
+    return () => {
+      window.removeEventListener("keydown", bump);
+      window.removeEventListener("mousedown", bump);
+      window.removeEventListener("touchstart", bump);
+    };
+  }, []);
+  useEffect(() => {
+    if (screen.name === "IDLE" || screen.name === "FLASH") return;
+    lastActivityRef.current = Date.now();
+    const id = setInterval(() => {
+      if (Date.now() - lastActivityRef.current > 180_000) {
+        setScreen({ name: "IDLE" });
+      }
+    }, 5000);
+    return () => clearInterval(id);
+  }, [screen.name]);
 
   const flash = (texto: string, tone: "ok" | "warn" | "err", next: Screen, ms = 1500) => {
     setScreen({ name: "FLASH", texto, tone, nextScreen: next });
@@ -385,6 +410,8 @@ function TotemPage() {
             setJornada(null);
             setCiclo(null);
             setPausa(null);
+            setUltimos([]);
+            setPontos(1000);
           }}
         />
       )}
@@ -631,7 +658,7 @@ function PainelScreen(props: {
           <div className="text-muted-foreground text-sm">Nenhuma tarefa ainda hoje.</div>
         ) : (
           <ul className="grid grid-cols-3 gap-3">
-            {ultimos.map((c) => (
+            {ultimos.slice(0, 3).map((c) => (
               <li key={c.id} className="border border-border px-3 py-2 text-sm flex items-center justify-between">
                 <span className="font-display uppercase truncate">{c.nome_tarefa}</span>
                 <span className="font-mono text-muted-foreground">
