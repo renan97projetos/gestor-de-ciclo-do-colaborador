@@ -743,10 +743,12 @@ function CardPausaAtiva({ pausa, now }: { pausa: Pausa; now: number }) {
   );
 }
 
-function CardOcioso({ ultimos, now }: { ultimos: Ciclo[]; now: number }) {
+function CardOcioso({ ultimos, jornada, now }: { ultimos: Ciclo[]; jornada: Jornada; now: number }) {
   const ultimo = ultimos.find((c) => c.fim);
-  const ref = ultimo?.fim ? new Date(ultimo.fim).getTime() : null;
-  const sec = ref ? (now - ref) / 1000 : 0;
+  // Se ainda não houve nenhuma tarefa encerrada, mede ociosidade desde o início da jornada
+  const ref = ultimo?.fim ? new Date(ultimo.fim).getTime() : new Date(jornada.inicio).getTime();
+  const desdeInicio = !ultimo;
+  const sec = Math.max(0, (now - ref) / 1000);
   const alerta = sec > 300;
   return (
     <div className={`panel p-6 border-l-4 ${alerta ? "pulse-alert" : ""}`} style={{ borderLeftColor: "var(--destructive)" }}>
@@ -756,14 +758,14 @@ function CardOcioso({ ultimos, now }: { ultimos: Ciclo[]; now: number }) {
           <div className="text-3xl font-display font-bold mt-1 text-destructive">SEM TAREFA ATIVA</div>
           <div className="text-sm text-muted-foreground mt-1">Inicie uma tarefa pressionando [1]</div>
         </div>
-        {ref && (
-          <div className="text-right">
-            <div className="text-xs font-display uppercase text-muted-foreground tracking-widest">Ocioso há</div>
-            <div className={`font-mono text-6xl font-bold ${alerta ? "text-destructive" : "text-warning"}`}>
-              {fmtDuration(sec)}
-            </div>
+        <div className="text-right">
+          <div className="text-xs font-display uppercase text-muted-foreground tracking-widest">
+            {desdeInicio ? "Ocioso desde início" : "Ocioso há"}
           </div>
-        )}
+          <div className={`font-mono text-6xl font-bold ${alerta ? "text-destructive" : "text-warning"}`}>
+            {fmtDuration(sec)}
+          </div>
+        </div>
       </div>
     </div>
   );
