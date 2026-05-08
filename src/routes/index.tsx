@@ -583,29 +583,36 @@ function PainelScreen(props: {
 
   const status = pausa ? "PAUSA" : ciclo ? "TAREFA" : "OCIOSO";
 
+  // Estado C: pelo menos um ciclo já encerrado nesta jornada (libera [9] ENCERRAR JORNADA)
+  const algumCicloEncerrado = ultimos.some((c) => !!c.fim);
+
   const items = useMemo(() => {
+    // Estado: PAUSA aberta
     if (pausa) {
       return [
         { kbd: "1", label: "RETORNAR DA PAUSA", onSelect: props.onRetornarPausa, variant: "success" as const, icon: <Play className="size-6" /> },
         { kbd: "3", label: "REGISTRAR OCORRÊNCIA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
       ];
     }
+    // Estado B: TAREFA em andamento
     if (ciclo) {
       return [
         { kbd: "1", label: "ENCERRAR TAREFA ATUAL", onSelect: props.onEncerrarTarefa, variant: "success" as const, icon: <Square className="size-6" /> },
         { kbd: "2", label: "REGISTRAR PAUSA", onSelect: props.onPausa, variant: "warning" as const, icon: <Coffee className="size-6" /> },
         { kbd: "3", label: "REGISTRAR OCORRÊNCIA NESTA TAREFA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
-        { kbd: "4", label: "VER MEU RESUMO DO DIA", onSelect: props.onResumo, icon: <Trophy className="size-6" /> },
       ];
     }
-    return [
+    // Estado A (jornada sem tarefa, nenhum ciclo encerrado) ou C (já encerrou pelo menos uma)
+    const base = [
       { kbd: "1", label: "INICIAR TAREFA", onSelect: props.onIniciarTarefa, variant: "success" as const, icon: <Play className="size-6" /> },
-      { kbd: "2", label: "REGISTRAR PAUSA", onSelect: props.onPausa, variant: "warning" as const, icon: <Coffee className="size-6" /> },
+      { kbd: "2", label: "PAUSA FORÇADA (SEM TAREFA)", onSelect: props.onPausa, variant: "warning" as const, icon: <Coffee className="size-6" /> },
       { kbd: "3", label: "REGISTRAR OCORRÊNCIA", onSelect: props.onOcorrencia, icon: <AlertTriangle className="size-6" /> },
-      { kbd: "4", label: "VER MEU RESUMO DO DIA", onSelect: props.onResumo, icon: <Trophy className="size-6" /> },
-      { kbd: "9", label: "ENCERRAR JORNADA", onSelect: props.onEncerrarJornada, variant: "danger" as const, icon: <LogOut className="size-6" /> },
     ];
-  }, [pausa?.id, ciclo?.id]);
+    if (algumCicloEncerrado) {
+      base.push({ kbd: "9", label: "ENCERRAR JORNADA", onSelect: props.onEncerrarJornada, variant: "danger" as const, icon: <LogOut className="size-6" /> });
+    }
+    return base;
+  }, [pausa?.id, ciclo?.id, algumCicloEncerrado]);
 
   useKeyboardNav(
     {
